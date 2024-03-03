@@ -49,12 +49,14 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
                 new_id_number = highest_id_number + 1
             else:
                 new_id_number = 1
-            self.id = f'{prefix}{new_id_number:07}' 
+            self.id = f'{prefix}{new_id_number:07}'
+        raw_password = self.password
+        self.set_password(self.password)
         super(CustomUser, self).save(*args, **kwargs)
 
         send_mail(
             'User Registration',
-            f'Hello {self.name},\n\nYour account has been created successfully.\n\nUsername: {self.username}\nPassword: {self.password}\n\nThank you!',
+            f'Hello {self.name},\n\nYour account has been created successfully.\n\nUsername: {self.username}\nPassword: {raw_password}\n\nThank you!',
             os.getenv('EMAIL_HOST_USER'),
             [self.email],
             fail_silently=False,
